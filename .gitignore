@@ -1,0 +1,8 @@
+*.py[cod]
+__pycache__
+*.egg-info
+.cache
+kafka
+.mypy_cache
+.pytest_cache
+dist
