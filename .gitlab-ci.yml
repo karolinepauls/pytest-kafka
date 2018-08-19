@@ -1,0 +1,9 @@
+image: python:3.6
+
+before_script:
+  - apt-get update -qq && apt-get install -y -qq openjdk-8-jre-headless
+  - ./setup.py develop
+
+test:
+  script:
+  - py.test -vv -s
