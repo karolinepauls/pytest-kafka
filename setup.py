@@ -95,6 +95,6 @@ setup(
     # We don't export fixtures for the user (only fixture factories) but we do declare some fixtures
     # for internal use.
     entry_points={
-        'pytest11': ["pytest_kafka = pytest_kafka.fixtures"]
+        'pytest11': ["pytest_kafka = pytest_kafka._fixtures"]
     },
 )
