@@ -68,6 +68,7 @@ DEV_REQUIREMENTS = [
     'pyflakes>=1.6.0',  # Flake8's version doesn't detect types used in string annotations.
     'flake8-docstrings',
     'flake8_tuple',
+    'mypy',
 ]
 
 setup(
