@@ -54,7 +54,7 @@ def wait_until(cond: Callable[[], bool], timeout: float = 15, interval: float = 
             return
         sleep(interval)
 
-    raise AssertionError(f"Condition not true in {timeout} seconds")
+    raise AssertionError("Condition not true in {} seconds".format(timeout))
 
 
 def write_config(template_string: str, destination: Path, **template_vars) -> None:
@@ -188,7 +188,7 @@ def make_kafka_consumer(
     kafka_fixture_name: str,
     kafka_topics: Optional[List[str]] = None,
     seek_to_beginning: bool = False,
-    **consumer_kwargs,
+    **consumer_kwargs
 ) -> Callable[..., KafkaConsumer]:
     """Make kafka_consumer fixture."""
     if kafka_topics is None:
