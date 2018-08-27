@@ -49,3 +49,10 @@ Execute ``./setup.py develop`` in a virtualenv. This will take care of:
 - updating pip
 - installing dev dependencies
 - installing Kafka to the project dir (for development only)
+
+
+Acknowledgements
+----------------
+
+The library has been open-sourced from a codebase belonging to
+`Infectious Media <https://infectiousmedia.com>`__.
