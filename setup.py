@@ -86,6 +86,7 @@ setup(
     keywords='',
     author='Karoline Pauls',
     author_email='code@karolinepauls.com',
+    url='https://gitlab.com/karolinepauls/pytest-kafka',
     license='MIT',
     packages=['pytest_kafka'],
     install_requires=REQUIREMENTS,
