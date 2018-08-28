@@ -6,3 +6,5 @@ kafka
 .mypy_cache
 .pytest_cache
 dist
+build
+docs/_build

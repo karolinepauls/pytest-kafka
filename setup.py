@@ -70,6 +70,10 @@ DEV_REQUIREMENTS = [
     'flake8_tuple',
     'mypy',
 ]
+DOC_REQUIREMENTS = [
+    'Sphinx==1.7.8',
+    'sphinx-rtd-theme==0.4.1',
+]
 
 setup(
     name='pytest-kafka',
@@ -94,7 +98,10 @@ setup(
     },
     zip_safe=False,
     install_requires=REQUIREMENTS,
-    extras_require={'dev': DEV_REQUIREMENTS},
+    extras_require={
+        'dev': DEV_REQUIREMENTS,
+        'doc': DOC_REQUIREMENTS,
+    },
     cmdclass={
         'develop': CustomDevelop,
     },
