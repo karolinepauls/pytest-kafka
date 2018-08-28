@@ -89,6 +89,10 @@ setup(
     url='https://gitlab.com/karolinepauls/pytest-kafka',
     license='MIT',
     packages=['pytest_kafka'],
+    package_data={
+        'pytest_kafka': ['py.typed'],
+    },
+    zip_safe=False,
     install_requires=REQUIREMENTS,
     extras_require={'dev': DEV_REQUIREMENTS},
     cmdclass={
