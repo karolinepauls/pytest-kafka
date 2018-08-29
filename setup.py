@@ -56,6 +56,7 @@ class CustomDevelop(develop):
         set_up_kafka()
 
 
+VERSION = '0.0.2'
 README_FILE = Path(__file__).resolve().with_name('README.rst')
 README = README_FILE.read_text('utf-8')
 REQUIREMENTS = [
@@ -75,39 +76,40 @@ DOC_REQUIREMENTS = [
     'sphinx-rtd-theme==0.4.1',
 ]
 
-setup(
-    name='pytest-kafka',
-    version='0.0.2',
-    description='Zookeeper, Kafka server, and Kafka consumer fixtures for Pytest',
-    long_description=README,
-    classifiers=[
-        'Framework :: Pytest',
-        'Topic :: Software Development :: Testing',
-        'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-    ],
-    keywords='',
-    author='Karoline Pauls',
-    author_email='code@karolinepauls.com',
-    url='https://gitlab.com/karolinepauls/pytest-kafka',
-    license='MIT',
-    packages=['pytest_kafka'],
-    package_data={
-        'pytest_kafka': ['py.typed'],
-    },
-    zip_safe=False,
-    install_requires=REQUIREMENTS,
-    extras_require={
-        'dev': DEV_REQUIREMENTS,
-        'doc': DOC_REQUIREMENTS,
-    },
-    cmdclass={
-        'develop': CustomDevelop,
-    },
-    # We don't export fixtures for the user (only fixture factories) but we do declare some fixtures
-    # for internal use.
-    entry_points={
-        'pytest11': ["pytest_kafka = pytest_kafka._fixtures"]
-    },
-)
+if __name__ == '__main__':
+    setup(
+        name='pytest-kafka',
+        version=VERSION,
+        description='Zookeeper, Kafka server, and Kafka consumer fixtures for Pytest',
+        long_description=README,
+        classifiers=[
+            'Framework :: Pytest',
+            'Topic :: Software Development :: Testing',
+            'License :: OSI Approved :: BSD License',
+            'Programming Language :: Python :: 3.5',
+            'Programming Language :: Python :: 3.6',
+        ],
+        keywords='',
+        author='Karoline Pauls',
+        author_email='code@karolinepauls.com',
+        url='https://gitlab.com/karolinepauls/pytest-kafka',
+        license='MIT',
+        packages=['pytest_kafka'],
+        package_data={
+            'pytest_kafka': ['py.typed'],
+        },
+        zip_safe=False,
+        install_requires=REQUIREMENTS,
+        extras_require={
+            'dev': DEV_REQUIREMENTS,
+            'doc': DOC_REQUIREMENTS,
+        },
+        cmdclass={
+            'develop': CustomDevelop,
+        },
+        # We don't export fixtures for the user (only fixture factories) but we do declare some
+        # fixtures for internal use.
+        entry_points={
+            'pytest11': ["pytest_kafka = pytest_kafka._fixtures"]
+        },
+    )
