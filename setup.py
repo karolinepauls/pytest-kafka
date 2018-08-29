@@ -73,7 +73,7 @@ DEV_REQUIREMENTS = [
 
 setup(
     name='pytest-kafka',
-    version='0.0.1',
+    version='0.0.2',
     description='Zookeeper, Kafka server, and Kafka consumer fixtures for Pytest',
     long_description=README,
     classifiers=[
