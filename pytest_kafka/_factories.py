@@ -95,7 +95,18 @@ def make_zookeeper_process(
     zk_config_template: str = ZOOKEEPER_CONFIG_TEMPLATE,
     scope: str = 'function',
 ) -> Callable[..., Tuple[Popen, int]]:
-    """Make zookeeper_process fixture."""
+    """
+    Make a Zookeeper fixture.
+
+    The fixture will spawn a Zookeeper process in a new process group and return its process handle
+    and port number. Data will be stored in a Pytest-provided temporary directory.
+
+    :param zk_bin: path to Zookeeper launch script (typically to bin/zookeeper-server-start.sh)
+    :param zk_port: Zookeeper port (random free port by default)
+    :param zk_config_template: Zookeeper config template, must use keys ``zk_data_dir`` and
+        ``zk_port``
+    :param scope: 'function' or 'session'
+    """
     @pytest.fixture(scope=scope)
     def zookeeper_process(request: 'SubRequest') -> Tuple[Popen, int]:
         """Configure and start a Zookeeper service."""
@@ -134,7 +145,20 @@ def make_kafka_server(
     kafka_config_template: str = KAFKA_SERVER_CONFIG_TEMPLATE,
     scope: str = 'function',
 ) -> Callable[..., Tuple[Popen, int]]:
-    """Make kafka_server fixture."""
+    """
+    Make a Kafka fixture.
+
+    The fixture will spawn a Kafka process in a new process group and return its process handle
+    and port number. Data will be stored in a Pytest-provided temporary directory.
+
+    :param zookeeper_fixture_name: the name of the Zookeeper fixture to depend on. The scope must
+        not be wider than this fixture's scope.
+    :param kafka_bin: path to Kafka launch script (typically to bin/kafka-server-start.sh)
+    :param kafka_port: Kafka port (random free port by default)
+    :param kafka_config_template: Kafka config template, must use keys ``kafka_log_dir`` and
+        ``kafka_port``
+    :param scope: 'function' or 'session'
+    """
     @pytest.fixture(scope=scope)
     def kafka_server(request: 'SubRequest') -> Tuple[Popen, int]:
         """Configure and start a Kafka server."""
@@ -190,7 +214,20 @@ def make_kafka_consumer(
     seek_to_beginning: bool = False,
     **consumer_kwargs
 ) -> Callable[..., KafkaConsumer]:
-    """Make kafka_consumer fixture."""
+    """
+    Make a Kafka consumer fixture.
+
+    Unlike the other fixtures, the scope is always ``"function"``.
+
+    :param kafka_fixture_name: the name of the Kafka fixture to depend on
+    :param kafka_topics: topics to subscribe to
+    :param seek_to_beginning: whether the consumer should consume from the earlies offsets. Solves
+        the race condition between consumer setup and Kafka server + Producer setup but requires
+        to know the topics upfront.
+    :param consumer_kwargs: what to pass to KafkaConsumer.
+
+    It's recommended to pass both ``kafka_topics`` and ``seek_to_beginning``.
+    """
     if kafka_topics is None:
         kafka_topics = []
 
@@ -199,7 +236,7 @@ def make_kafka_consumer(
         """
         Get a connected Kafka consumer.
 
-        Will consume from the beginning and with a timeout, so `list(consumer)` can be used.
+        Will consume from the beginning and with a timeout, so ``list(consumer)`` can be used.
         """
         _, kafka_port = request.getfixturevalue(kafka_fixture_name)
 
