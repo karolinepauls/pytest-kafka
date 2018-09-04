@@ -15,6 +15,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 from setup import VERSION
 
 
@@ -174,3 +175,13 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+def run_apidoc(_):
+    from sphinx.apidoc import main
+    main(["I'm a cow, really", '../pytest_kafka', '-o', 'source/', '-fMe'])
+
+
+def setup(app):
+    """Inject run_apidoc for readthedocs."""
+    app.connect('builder-inited', run_apidoc)
