@@ -2,7 +2,7 @@ pytest-kafka
 ============
 
 Pytest fixture factories for Zookeeper, Kafka server and Kafka consumer.
-
+`API docs <https://pytest-kafka.readthedocs.io>`__.
 
 .. code:: python
 
