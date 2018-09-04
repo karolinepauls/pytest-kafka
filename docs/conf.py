@@ -41,6 +41,7 @@ release = VERSION
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx_autodoc_annotation',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
@@ -102,6 +103,13 @@ html_static_path = ['_static']
 #
 # html_sidebars = {}
 
+html_context = {
+        "display_gitlab": True,
+        "gitlab_user": "karolinepauls", # Username
+        "gitlab_repo": "pytest-kafka", # Repo name
+        "gitlab_version": "master", # Version
+        "conf_py_path": "/docs/", # Path in the checkout to the docs root
+}
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

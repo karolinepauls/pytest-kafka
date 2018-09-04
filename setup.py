@@ -73,6 +73,7 @@ DEV_REQUIREMENTS = [
 ]
 DOC_REQUIREMENTS = [
     'Sphinx==1.7.8',
+    'sphinx-autodoc-annotation==1.0.post1',
     'sphinx-rtd-theme==0.4.1',
 ]
 

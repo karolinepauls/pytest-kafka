@@ -5,8 +5,8 @@ Welcome to pytest-kafka's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   readme
-   reference
+   Quickstart <readme>
+   API Docs <source/modules>
 
 
 Indices and tables

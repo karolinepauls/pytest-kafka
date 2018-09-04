@@ -10,42 +10,15 @@ from kafka import KafkaProducer, KafkaConsumer  # type: ignore
 from kafka.errors import NoBrokersAvailable  # type: ignore
 import pytest  # type: ignore
 import port_for  # type: ignore
+from pytest_kafka.constants import (
+    KAFKA_SERVER_CONFIG_TEMPLATE, ZOOKEEPER_CONFIG_TEMPLATE, DEFAULT_CONSUMER_TIMEOUT_MS,
+)
 if TYPE_CHECKING:
     # Don't break anything else than typechecking if pytest changes.
     from _pytest.fixtures import SubRequest  # type: ignore  # noqa
 
 
-ROOT = Path(__name__).parent
-
-
-KAFKA_SERVER_CONFIG_TEMPLATE = '''
-reserved.broker.max.id=65535
-broker.id={kafka_port}
-listeners=PLAINTEXT://:{kafka_port}
-log.dirs={kafka_log_dir}
-num.partitions=1
-# The number of threads lowered to 1 - may boost startup time:
-num.recovery.threads.per.data.dir=1
-num.network.threads=1
-num.io.threads=1
-log.retention.hours=1
-log.segment.bytes=1073741824
-zookeeper.connect=localhost:{zk_port}
-zookeeper.connection.timeout.ms=6000
-offsets.topic.replication.factor=1
-default.replication.factor=1
-'''
-
-ZOOKEEPER_CONFIG_TEMPLATE = '''
-dataDir={zk_data_dir}
-clientPort={zk_port}
-maxClientCnxns=0
-'''
-
-DEFAULT_CONSUMER_TIMEOUT_MS = 500
-
-
-def wait_until(cond: Callable[[], bool], timeout: float = 15, interval: float = 0.1):
+def _wait_until(cond: Callable[[], bool], timeout: float = 15, interval: float = 0.1):
     """Poll until the condition is True."""
     start = time()
     end = start + timeout
@@ -57,7 +30,7 @@ def wait_until(cond: Callable[[], bool], timeout: float = 15, interval: float = 
     raise AssertionError("Condition not true in {} seconds".format(timeout))
 
 
-def write_config(template_string: str, destination: Path, **template_vars) -> None:
+def _write_config(template_string: str, destination: Path, **template_vars) -> None:
     """
     Render the specified config template into the configs_dir.
 
@@ -68,7 +41,7 @@ def write_config(template_string: str, destination: Path, **template_vars) -> No
     destination.write_text(rendered)
 
 
-def teardown(proc):
+def _teardown(proc):
     """Kill the process with TERM and wait for it."""
     proc.terminate()
     try:
@@ -81,7 +54,7 @@ def teardown(proc):
         proc.wait()
 
 
-def get_tmpdir_fixture_name(scope: str) -> str:
+def _get_tmpdir_fixture_name(scope: str) -> str:
     """Get appropriately-scoped tmpdir fixture."""
     if scope == 'session':
         return 'session_tmpdir_path'
@@ -104,21 +77,24 @@ def make_zookeeper_process(
     :param zk_bin: path to Zookeeper launch script (typically to bin/zookeeper-server-start.sh)
     :param zk_port: Zookeeper port (random free port by default)
     :param zk_config_template: Zookeeper config template, must use keys ``zk_data_dir`` and
-        ``zk_port``
+        ``zk_port``. See :py:const:`pytest_kafka.constants.ZOOKEEPER_CONFIG_TEMPLATE`.
     :param scope: 'function' or 'session'
+
+
+
     """
     @pytest.fixture(scope=scope)
     def zookeeper_process(request: 'SubRequest') -> Tuple[Popen, int]:
         """Configure and start a Zookeeper service."""
         used_zk_port = port_for.select_random() if zk_port is None else zk_port
-        tempdir_path = request.getfixturevalue(get_tmpdir_fixture_name(scope))
+        tempdir_path = request.getfixturevalue(_get_tmpdir_fixture_name(scope))
 
         zk_dir = tempdir_path / 'zookeeper-{}'.format(used_zk_port)
         zk_data_dir = zk_dir / 'data'
         zk_data_dir.mkdir(parents=True)
         zk_config_path = zk_dir / 'zookeeper.properties'
 
-        write_config(
+        _write_config(
             zk_config_template, zk_config_path,
             zk_port=used_zk_port,
             zk_data_dir=zk_data_dir
@@ -129,7 +105,7 @@ def make_zookeeper_process(
             start_new_session=True,
         )
 
-        request.addfinalizer(lambda: teardown(zk_proc))
+        request.addfinalizer(lambda: _teardown(zk_proc))
 
         # Kafka will wait for zookeeper, not need to poll it here.
         # If you use the zookeeper fixure alone, I'm sorry.
@@ -156,7 +132,7 @@ def make_kafka_server(
     :param kafka_bin: path to Kafka launch script (typically to bin/kafka-server-start.sh)
     :param kafka_port: Kafka port (random free port by default)
     :param kafka_config_template: Kafka config template, must use keys ``kafka_log_dir`` and
-        ``kafka_port``
+        ``kafka_port``. See :py:const:`pytest_kafka.constants.KAFKA_SERVER_CONFIG_TEMPLATE`.
     :param scope: 'function' or 'session'
     """
     @pytest.fixture(scope=scope)
@@ -164,14 +140,14 @@ def make_kafka_server(
         """Configure and start a Kafka server."""
         _, zk_port = request.getfixturevalue(zookeeper_fixture_name)
         used_kafka_port = port_for.select_random() if kafka_port is None else kafka_port
-        tempdir_path = request.getfixturevalue(get_tmpdir_fixture_name(scope))
+        tempdir_path = request.getfixturevalue(_get_tmpdir_fixture_name(scope))
 
         kafka_dir = tempdir_path / 'kafka-server-{}'.format(used_kafka_port)
         kafka_log_dir = kafka_dir / 'logs'
         kafka_log_dir.mkdir(parents=True)
         kafka_config_path = kafka_dir / 'kafka-server.properties'
 
-        write_config(
+        _write_config(
             kafka_config_template, kafka_config_path,
             zk_port=zk_port,
             kafka_port=used_kafka_port,
@@ -183,7 +159,7 @@ def make_kafka_server(
             start_new_session=True,
         )
 
-        request.addfinalizer(lambda: teardown(kafka_proc))
+        request.addfinalizer(lambda: _teardown(kafka_proc))
 
         def kafka_started():
             assert kafka_proc.poll() is None, 'Kafka process must not terminate'
@@ -199,7 +175,7 @@ def make_kafka_server(
         prev_propagate = kafka_logger.propagate
         try:
             kafka_logger.propagate = False
-            wait_until(kafka_started)
+            _wait_until(kafka_started)
         finally:
             kafka_logger.propagate = prev_propagate
 
@@ -224,7 +200,9 @@ def make_kafka_consumer(
     :param seek_to_beginning: whether the consumer should consume from the earlies offsets. Solves
         the race condition between consumer setup and Kafka server + Producer setup but requires
         to know the topics upfront.
-    :param consumer_kwargs: what to pass to KafkaConsumer.
+    :param consumer_kwargs: what to pass to KafkaConsumer. By default ``bootstrap_servers`` will get
+        the server from the passed fixture and `consumer_timeout_ms` will be
+        :py:const:`pytest_kafka.constants.DEFAULT_CONSUMER_TIMEOUT_MS`.
 
     It's recommended to pass both ``kafka_topics`` and ``seek_to_beginning``.
     """
@@ -258,7 +236,7 @@ def make_kafka_consumer(
                 consumer.poll(timeout_ms=20)
                 return len(consumer.assignment()) > 0
 
-            wait_until(partitions_assigned)
+            _wait_until(partitions_assigned)
 
             consumer.seek_to_beginning()
         return consumer
