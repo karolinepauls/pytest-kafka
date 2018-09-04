@@ -94,6 +94,11 @@ if __name__ == '__main__':
         author='Karoline Pauls',
         author_email='code@karolinepauls.com',
         url='https://gitlab.com/karolinepauls/pytest-kafka',
+        project_urls={
+            "Bug Tracker": 'https://gitlab.com/karolinepauls/pytest-kafka/issues',
+            "Documentation": 'https://pytest-kafka.readthedocs.io/en/',
+            "Source Code": 'https://gitlab.com/karolinepauls/pytest-kafka',
+        },
         license='MIT',
         packages=['pytest_kafka'],
         package_data={
