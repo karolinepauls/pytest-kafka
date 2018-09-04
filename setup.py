@@ -56,7 +56,7 @@ class CustomDevelop(develop):
         set_up_kafka()
 
 
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 README_FILE = Path(__file__).resolve().with_name('README.rst')
 README = README_FILE.read_text('utf-8')
 REQUIREMENTS = [
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         url='https://gitlab.com/karolinepauls/pytest-kafka',
         project_urls={
             "Bug Tracker": 'https://gitlab.com/karolinepauls/pytest-kafka/issues',
-            "Documentation": 'https://pytest-kafka.readthedocs.io/en/',
+            "Documentation": 'https://pytest-kafka.readthedocs.io/',
             "Source Code": 'https://gitlab.com/karolinepauls/pytest-kafka',
         },
         license='MIT',
