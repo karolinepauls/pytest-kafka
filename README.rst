@@ -1,5 +1,5 @@
-pytest-kafka |pypi| |pyversions| |ci|
-=====================================
+pytest-kafka |pypi| |pyversions| |ci| |docs|
+============================================
 
 .. |pypi| image:: https://img.shields.io/pypi/v/pytest-kafka.svg
     :target: https://pypi.org/project/pytest-kafka/
@@ -8,7 +8,10 @@ pytest-kafka |pypi| |pyversions| |ci|
     :target: https://pypi.org/project/pytest-kafka/
 
 .. |ci| image:: https://gitlab.com/karolinepauls/pytest-kafka/badges/master/pipeline.svg
-    :target: https://pypi.org/project/pytest-kafka/
+    :target: https://gitlab.com/karolinepauls/pytest-kafka/pipelines
+
+.. |docs| image:: https://readthedocs.org/projects/pytest-kafka/badge/?version=latest
+    :target: https://pytest-kafka.readthedocs.io/en/latest/
 
 
 Pytest fixture factories for Zookeeper, Kafka server and Kafka consumer.
