@@ -1,9 +1,17 @@
-"""Pytest-kafka testing."""
+"""
+Pytest-kafka tests.
+
+Can serve as examples of Pytest-kafka usage.
+"""
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING
+from functools import partial
 from subprocess import Popen
 from kafka import KafkaProducer, KafkaConsumer  # type: ignore
-from pytest_kafka import make_zookeeper_process, make_kafka_server, make_kafka_consumer
+from pytest_kafka import make_zookeeper_process, make_kafka_server, make_kafka_consumer, terminate
+if TYPE_CHECKING:
+    # Don't break anything else than typechecking if pytest changes.
+    from _pytest.fixtures import SubRequest  # type: ignore  # noqa
 
 
 ROOT = Path(__file__).parent
@@ -14,6 +22,7 @@ ZOOKEEPER_BIN = str(KAFKA_SCRIPTS / 'zookeeper-server-start.sh')
 
 TOPIC = 'abc'
 
+# 2 independent basic fixture sets.
 zookeeper_proc = make_zookeeper_process(ZOOKEEPER_BIN)
 kafka_server = make_kafka_server(KAFKA_BIN, 'zookeeper_proc')
 kafka_consumer = make_kafka_consumer('kafka_server', seek_to_beginning=True, kafka_topics=[TOPIC])
@@ -22,10 +31,20 @@ zookeeper_proc_2 = make_zookeeper_process(ZOOKEEPER_BIN)
 kafka_server_2 = make_kafka_server(KAFKA_BIN, 'zookeeper_proc_2')
 kafka_consumer_2 = make_kafka_consumer('kafka_server', seek_to_beginning=True, kafka_topics=[TOPIC])
 
+# Zookeeper shared with `kafka_server`.
 kafka_server_same_zk = make_kafka_server(KAFKA_BIN, 'zookeeper_proc')
 kafka_consumer_same_zk = make_kafka_consumer(
     'kafka_server_same_zk', seek_to_beginning=True, kafka_topics=[TOPIC])
 
+# ZK and Kafka immediately killed with SIGKILL on teardown.
+# Don't call `teardown_fn` `teardown` or Pytest will try to run it on module teardown.
+teardown_fn = partial(terminate, signal_fn=Popen.kill)
+zookeeper_proc_kill = make_zookeeper_process(ZOOKEEPER_BIN, teardown_fn=teardown_fn)
+kafka_server_kill = make_kafka_server(KAFKA_BIN, 'zookeeper_proc_kill', teardown_fn=teardown_fn)
+kafka_consumer_kill = make_kafka_consumer(
+    'kafka_server_kill', seek_to_beginning=True, kafka_topics=[TOPIC])
+
+# Session-scoped fixture set.
 zookeeper_proc_session = make_zookeeper_process(ZOOKEEPER_BIN, scope='session')
 kafka_server_session = make_kafka_server(KAFKA_BIN, 'zookeeper_proc_session', scope='session')
 # The consumer is function-scoped but consumes from a session-scoped Kafka.
@@ -80,8 +99,21 @@ def test_2_kafkas_shared_zookeeper_cluster(
     assert messages_1 == messages_2 == excepted_messages
 
 
+def test_custom_kill(kafka_server_kill):
+    """
+    Test supplying custom process teardown function.
+
+    Teardown timing of this test is checked by hooks in conftest.
+    """
+    pass
+
+
 def test_session_scoped_kafka(
     kafka_server_session: Tuple[Popen, int], kafka_consumer_session: KafkaConsumer,
 ):
-    """Use a session-scoped fixture set."""
+    """
+    Use a session-scoped fixture set.
+
+    Place this test last so its session-scoped teardown doesn't disturb timings of some other test.
+    """
     write_and_read(kafka_server_session, kafka_consumer_session)

@@ -29,3 +29,5 @@ maxClientCnxns=0
 
 DEFAULT_CONSUMER_TIMEOUT_MS = 500
 """Kafka Consumer timeout in miliseconds."""
+
+DEFAULT_TERMINATION_WAIT_TIMEOUT_SEC = 5

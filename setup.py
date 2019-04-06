@@ -11,10 +11,9 @@ from setuptools import setup  # type: ignore
 from setuptools.command.develop import develop  # type: ignore
 
 
-KAFKA_URL = (
-    'https://www.mirrorservice.org/sites/ftp.apache.org/kafka/1.1.1/kafka_2.11-1.1.1.tgz')
+KAFKA_URL = 'https://www.mirrorservice.org/sites/ftp.apache.org/kafka/2.2.0/kafka_2.12-2.2.0.tgz'
 KAFKA_TAR = 'kafka.tgz'
-KAFKA_TAR_ROOTDIR = 'kafka_2.11-1.1.1'
+KAFKA_TAR_ROOTDIR = 'kafka_2.12-2.2.0'
 KAFKA_DIR = 'kafka'
 
 
@@ -50,7 +49,7 @@ class CustomDevelop(develop):
         super().run()
         print('* Installing dev dependencies', file=sys.stderr)
         subprocess.check_call(['pip', 'install', '-U', 'pip'])
-        subprocess.check_call(['pip', 'install', '.[dev]'])
+        subprocess.check_call(['pip', 'install'] + DEV_REQUIREMENTS)
 
         print('* Setting up Kafka', file=sys.stderr)
         set_up_kafka()

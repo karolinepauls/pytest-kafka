@@ -4,7 +4,7 @@ import signal
 import logging
 from pathlib import Path
 from time import time, sleep
-from typing import List, Callable, Optional, Tuple, TYPE_CHECKING
+from typing import List, Callable, Optional, Tuple, Any, TYPE_CHECKING
 from subprocess import Popen, TimeoutExpired
 from kafka import KafkaProducer, KafkaConsumer  # type: ignore
 from kafka.errors import NoBrokersAvailable  # type: ignore
@@ -12,6 +12,7 @@ import pytest  # type: ignore
 import port_for  # type: ignore
 from pytest_kafka.constants import (
     KAFKA_SERVER_CONFIG_TEMPLATE, ZOOKEEPER_CONFIG_TEMPLATE, DEFAULT_CONSUMER_TIMEOUT_MS,
+    DEFAULT_TERMINATION_WAIT_TIMEOUT_SEC,
 )
 if TYPE_CHECKING:
     # Don't break anything else than typechecking if pytest changes.
@@ -41,16 +42,24 @@ def _write_config(template_string: str, destination: Path, **template_vars) -> N
     destination.write_text(rendered)
 
 
-def _teardown(proc):
-    """Kill the process with TERM and wait for it."""
-    proc.terminate()
+def terminate(
+    proc: Popen,
+    signal_fn: Callable[[Popen], Any] = Popen.terminate,
+    wait_timeout: float = DEFAULT_TERMINATION_WAIT_TIMEOUT_SEC,
+) -> None:
+    """Kill the process with the desired method (SIGTERM by default) and wait for it."""
+    signal_fn(proc)
     try:
-        proc.wait(timeout=5)
+        proc.wait(timeout=wait_timeout)
     except TimeoutExpired:
         try:
             os.killpg(proc.pid, signal.SIGKILL)
         except ProcessLookupError:
             pass
+        # It is not possible to inherit any potential orphaned grandchildren (unless we use the new
+        # Linux-specific PR_SET_CHILD_SUBREAPER) so we can only wait for the main process.
+        # We don't expect Kafka/ZK to have child processes anyway. Even if, init would clean up
+        # orphaned processes - unless we're running in a Docker container without an init.
         proc.wait()
 
 
@@ -66,6 +75,7 @@ def make_zookeeper_process(
     zk_bin: str,
     zk_port: Optional[int] = None,
     zk_config_template: str = ZOOKEEPER_CONFIG_TEMPLATE,
+    teardown_fn: Callable[[Popen], Any] = terminate,
     scope: str = 'function',
 ) -> Callable[..., Tuple[Popen, int]]:
     """
@@ -78,10 +88,8 @@ def make_zookeeper_process(
     :param zk_port: Zookeeper port (random free port by default)
     :param zk_config_template: Zookeeper config template, must use keys ``zk_data_dir`` and
         ``zk_port``. See :py:const:`pytest_kafka.constants.ZOOKEEPER_CONFIG_TEMPLATE`.
+    :param teardown_fn: function to tear down Zookeeper (:py:func:`terminate` by default)
     :param scope: 'function' or 'session'
-
-
-
     """
     @pytest.fixture(scope=scope)
     def zookeeper_process(request: 'SubRequest') -> Tuple[Popen, int]:
@@ -105,7 +113,7 @@ def make_zookeeper_process(
             start_new_session=True,
         )
 
-        request.addfinalizer(lambda: _teardown(zk_proc))
+        request.addfinalizer(lambda: teardown_fn(zk_proc))
 
         # Kafka will wait for zookeeper, not need to poll it here.
         # If you use the zookeeper fixure alone, I'm sorry.
@@ -119,6 +127,7 @@ def make_kafka_server(
     zookeeper_fixture_name: str,
     kafka_port: Optional[int] = None,
     kafka_config_template: str = KAFKA_SERVER_CONFIG_TEMPLATE,
+    teardown_fn: Callable[[Popen], Any] = terminate,
     scope: str = 'function',
 ) -> Callable[..., Tuple[Popen, int]]:
     """
@@ -133,6 +142,7 @@ def make_kafka_server(
     :param kafka_port: Kafka port (random free port by default)
     :param kafka_config_template: Kafka config template, must use keys ``kafka_log_dir`` and
         ``kafka_port``. See :py:const:`pytest_kafka.constants.KAFKA_SERVER_CONFIG_TEMPLATE`.
+    :param teardown_fn: function to tear down Kafka (:py:func:`terminate` by default)
     :param scope: 'function' or 'session'
     """
     @pytest.fixture(scope=scope)
@@ -159,7 +169,7 @@ def make_kafka_server(
             start_new_session=True,
         )
 
-        request.addfinalizer(lambda: _teardown(kafka_proc))
+        request.addfinalizer(lambda: teardown_fn(kafka_proc))
 
         def kafka_started():
             assert kafka_proc.poll() is None, 'Kafka process must not terminate'

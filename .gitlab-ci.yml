@@ -7,14 +7,14 @@ test:
   script:
   - flake8
   - mypy .
-  - py.test -vv -s
+  - py.test -vv -s --durations=0
 
 test-3.5:
   image: python:3.5
   script:
-  - py.test -vv -s
+  - py.test -vv -s --durations=0
 
 test-3.7:
   image: python:3.7
   script:
-  - py.test -vv -s
+  - py.test -vv -s --durations=0

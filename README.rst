@@ -6,15 +6,21 @@ Pytest fixture factories for Zookeeper, Kafka server and Kafka consumer.
 
 .. code:: python
 
-    from pytest_kafka import make_zookeeper_process, make_kafka_server, make_kafka_consumer
+    from pytest_kafka import (
+        make_zookeeper_process, make_kafka_server, make_kafka_consumer,
+        terminate,
+    )
 
     ROOT = Path(__file__).parent
     KAFKA_SCRIPTS = ROOT / 'kafka/bin/'
     KAFKA_BIN = str(KAFKA_SCRIPTS / 'kafka-server-start.sh')
     ZOOKEEPER_BIN = str(KAFKA_SCRIPTS / 'zookeeper-server-start.sh')
 
-    zookeeper_proc = make_zookeeper_process(ZOOKEEPER_BIN)
-    kafka_server = make_kafka_server(KAFKA_BIN, 'zookeeper_proc')
+    # You can pass a custom teardown function (or parametrise ours). Just don't call it `teardown`
+    # or Pytest will interpret it as a module-scoped teardown function.
+    teardown_fn = partial(terminate, signal_fn=Popen.kill)
+    zookeeper_proc = make_zookeeper_process(ZOOKEEPER_BIN, teardown_fn=teardown_fn)
+    kafka_server = make_kafka_server(KAFKA_BIN, 'zookeeper_proc', teardown_fn=teardown_fn)
     kafka_consumer = make_kafka_consumer(
         'kafka_server', seek_to_beginning=True, kafka_topics=['topic'])
 
@@ -32,6 +38,10 @@ this project's setup.py to see a way of installing Kafka for development.
 It is advised to pass ``seek_to_beginning=True`` because otherwise some messages may not be captured
 by the consumer. This requires knowing the topics upfront because without topics there's no
 partitions to seek.
+
+Kafka server is known to take a couple of seconds to terminate gracefully. You probably don't
+need that, so you can pass ``partial(terminate, signal_fn=Popen.kill)`` to make it killed with
+SIGKILL and waited for afterwards.
 
 It's possible to create multiple Kafka fixtures forming a cluster by passing the same Zookeeper
 fixture to them. For an example, check the `tests
