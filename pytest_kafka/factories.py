@@ -198,12 +198,11 @@ def make_kafka_consumer(
     kafka_fixture_name: str,
     kafka_topics: Optional[List[str]] = None,
     seek_to_beginning: bool = False,
+    scope: str = 'function',
     **consumer_kwargs
 ) -> Callable[..., KafkaConsumer]:
     """
     Make a Kafka consumer fixture.
-
-    Unlike the other fixtures, the scope is always ``"function"``.
 
     :param kafka_fixture_name: the name of the Kafka fixture to depend on
     :param kafka_topics: topics to subscribe to
@@ -219,7 +218,7 @@ def make_kafka_consumer(
     if kafka_topics is None:
         kafka_topics = []
 
-    @pytest.fixture
+    @pytest.fixture(scope=scope)
     def kafka_consumer(request: 'SubRequest') -> KafkaConsumer:
         """
         Get a connected Kafka consumer.

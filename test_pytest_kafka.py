@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Tuple, TYPE_CHECKING
 from functools import partial
 from subprocess import Popen
+from time import sleep
+import pytest  # type: ignore
 from kafka import KafkaProducer, KafkaConsumer  # type: ignore
 from pytest_kafka import make_zookeeper_process, make_kafka_server, make_kafka_consumer, terminate
 if TYPE_CHECKING:
@@ -47,9 +49,11 @@ kafka_consumer_kill = make_kafka_consumer(
 # Session-scoped fixture set.
 zookeeper_proc_session = make_zookeeper_process(ZOOKEEPER_BIN, scope='session')
 kafka_server_session = make_kafka_server(KAFKA_BIN, 'zookeeper_proc_session', scope='session')
-# The consumer is function-scoped but consumes from a session-scoped Kafka.
-kafka_consumer_session = make_kafka_consumer(
+# The consumer can be either function- or session-scoped.
+kafka_consumer_session_function = make_kafka_consumer(
     'kafka_server_session', seek_to_beginning=True, kafka_topics=[TOPIC])
+kafka_consumer_session_session = make_kafka_consumer(
+    'kafka_server_session', seek_to_beginning=True, kafka_topics=[TOPIC], scope='session')
 
 
 def write_to_kafka(kafka_server: Tuple[Popen, int], message: bytes) -> None:
@@ -108,12 +112,33 @@ def test_custom_kill(kafka_server_kill):
     pass
 
 
+@pytest.fixture(scope='session')
+def wrote_something_to_kafka(
+    kafka_server_session: Tuple[Popen, int],
+    kafka_consumer_session_session: KafkaConsumer,
+) -> None:
+    """Write a message to Kafka using a session-scoped consumer fixture."""
+    written_before = list(kafka_consumer_session_session)
+    assert len(written_before) == 0
+    write_and_read(kafka_server_session, kafka_consumer_session_session)
+
+
 def test_session_scoped_kafka(
-    kafka_server_session: Tuple[Popen, int], kafka_consumer_session: KafkaConsumer,
+    kafka_server_session: Tuple[Popen, int],
+    kafka_consumer_session_function: KafkaConsumer,
+    kafka_consumer_session_session: KafkaConsumer,
+    wrote_something_to_kafka: None,
 ):
     """
     Use a session-scoped fixture set.
 
     Place this test last so its session-scoped teardown doesn't disturb timings of some other test.
     """
-    write_and_read(kafka_server_session, kafka_consumer_session)
+    # Ugly sleep. Need to investigate. https://gitlab.com/karolinepauls/pytest-kafka/issues/3
+    # 0.05 seems to be the boundary. Nothing happens in Kafka consumer logs though.
+    sleep(0.5)
+    written_in_setup = list(kafka_consumer_session_function)
+    kafka_consumer_session_session.seek_to_beginning()
+    written_in_setup_session = list(kafka_consumer_session_session)
+    assert len(written_in_setup) == 1
+    assert len(written_in_setup_session) == 1
