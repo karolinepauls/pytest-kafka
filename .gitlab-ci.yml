@@ -1,20 +1,29 @@
 before_script:
   - apt-get update -qq && apt-get install -y -qq openjdk-8-jre-headless
-  - ./setup.py develop
-
-test:
-  image: python:3.6
-  script:
+  - ./setup.py kafka
+  - '[ ! -d dist ]'
+  - ./setup.py sdist
+  - '[ -d dist ]'
+  - pip install .[dev]
   - flake8
   - mypy .
+  # Install the packaged project and make sure we're not importing another.
+  - pip uninstall pytest-kafka -y
+  - rm pytest_kafka -r
+  - 'pip install dist/pytest-kafka-*.tar.gz'
   - py.test -vv -s --durations=0
 
 test-3.5:
   image: python:3.5
   script:
-  - py.test -vv -s --durations=0
+    - 'true'
+
+test-3.6:
+  image: python:3.6
+  script:
+    - 'true'
 
 test-3.7:
   image: python:3.7
   script:
-  - py.test -vv -s --durations=0
+    - 'true'

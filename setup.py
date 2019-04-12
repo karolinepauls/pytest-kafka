@@ -7,7 +7,8 @@ import shutil
 import urllib.request
 import tarfile
 from pathlib import Path
-from setuptools import setup  # type: ignore
+from typing import List, Tuple
+from setuptools import setup, Command  # type: ignore
 from setuptools.command.develop import develop  # type: ignore
 
 
@@ -52,6 +53,24 @@ class CustomDevelop(develop):
         subprocess.check_call(['pip', 'install'] + DEV_REQUIREMENTS)
 
         print('* Setting up Kafka', file=sys.stderr)
+        set_up_kafka()
+
+
+class DownloadKafka(Command):
+    """Command to download Kafka."""
+
+    user_options = []  # type: List[Tuple]
+
+    def initialize_options(self):
+        """Do nothing, method required by setuptools."""
+        pass
+
+    def finalize_options(self):
+        """Do nothing, method required by setuptools."""
+        pass
+
+    def run(self):
+        """Download Kafka."""
         set_up_kafka()
 
 
@@ -111,6 +130,7 @@ if __name__ == '__main__':
             'doc': DOC_REQUIREMENTS,
         },
         cmdclass={
+            'kafka': DownloadKafka,
             'develop': CustomDevelop,
         },
         # We don't export fixtures for the user (only fixture factories) but we do declare some
