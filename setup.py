@@ -74,7 +74,7 @@ class DownloadKafka(Command):
         set_up_kafka()
 
 
-VERSION = '0.3.0'
+VERSION = '0.3.1'
 README_FILE = Path(__file__).resolve().with_name('README.rst')
 README = README_FILE.read_text('utf-8')
 REQUIREMENTS = [
