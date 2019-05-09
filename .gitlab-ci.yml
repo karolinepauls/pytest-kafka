@@ -1,4 +1,5 @@
 before_script:
+  - '[ -f pytest_kafka/py.typed ]'  # Typing marker must exist.
   - apt-get update -qq && apt-get install -y -qq openjdk-8-jre-headless
   - ./setup.py kafka
   - '[ ! -d dist ]'
