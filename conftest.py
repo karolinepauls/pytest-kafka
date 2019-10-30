@@ -29,6 +29,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
             "`test_custom_kill` didn't tear down in time",
             bold=True, red=True
         )
+        assert test_custom_kill_duration is not None
         terminalreporter.write_line(
             '`test_custom_kill` is expected to tear down in under {} but it took {:.2f} sec'.format(
                 EXPECTED_TEARDOWN_ON_KILL, test_custom_kill_duration),

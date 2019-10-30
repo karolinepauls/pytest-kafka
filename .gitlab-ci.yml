@@ -1,30 +1,34 @@
-before_script:
-  - '[ -f pytest_kafka/py.typed ]'  # Typing marker must exist.
-  - apt-get update -qq && apt-get install -y -qq openjdk-8-jre-headless
-  - ./setup.py kafka
-  - '[ ! -d dist ]'
-  - ./setup.py sdist
-  - '[ -d dist ]'
-  - pip install .[dev]
-  - flake8
-  - mypy .
-  # Install the packaged project and make sure we're not importing another.
-  - pip uninstall pytest-kafka -y
-  - rm pytest_kafka -r
-  - 'pip install dist/pytest-kafka-*.tar.gz'
-  - py.test -vv -s --durations=0
+.test-template: &test-template
+  script:
+    - '[ -f pytest_kafka/py.typed ]'  # Typing marker must exist.
+    # Work around a packaging problem with OpenJDK.
+    - 'for i in $(seq 1 8); do mkdir -p "/usr/share/man/man$i"; done'
+    - apt-get update -qq && apt-get install -y -qq openjdk-11-jre-headless
+    - ./setup.py kafka
+    - '[ ! -d dist ]'
+    - ./setup.py sdist
+    - '[ -d dist ]'
+    - pip install .[dev]
+    - flake8
+    - mypy .
+    # Install the packaged project and make sure we're not importing another.
+    - pip uninstall pytest-kafka -y
+    - rm pytest_kafka -r
+    - 'pip install dist/pytest-kafka-*.tar.gz'
+    - py.test -vv -s --durations=0
 
 test-3.5:
-  image: python:3.5
-  script:
-    - 'true'
+  image: python:3.5-slim-buster
+  <<: *test-template
 
 test-3.6:
-  image: python:3.6
-  script:
-    - 'true'
+  image: python:3.6-slim-buster
+  <<: *test-template
 
 test-3.7:
-  image: python:3.7
-  script:
-    - 'true'
+  image: python:3.7-slim-buster
+  <<: *test-template
+
+test-3.8:
+  image: python:3.8-slim-buster
+  <<: *test-template
