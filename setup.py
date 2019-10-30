@@ -6,6 +6,7 @@ import contextlib
 import shutil
 import urllib.request
 import tarfile
+from os import environ
 from pathlib import Path
 from typing import List, Tuple
 from setuptools import setup, Command  # type: ignore
@@ -75,6 +76,12 @@ class DownloadKafka(Command):
 
 
 VERSION = '0.3.2'
+
+# Optional suffix for Test PyPI packages.
+VERSION_SUFFIX = environ.get('VERSION_SUFFIX', None)
+if VERSION_SUFFIX is not None:
+    VERSION = '{}.post{}'.format(VERSION, VERSION_SUFFIX)
+
 README_FILE = Path(__file__).resolve().with_name('README.rst')
 README = README_FILE.read_text('utf-8')
 REQUIREMENTS = [
