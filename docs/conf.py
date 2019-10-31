@@ -22,7 +22,7 @@ from setup import VERSION
 # -- Project information -----------------------------------------------------
 
 project = 'pytest-kafka'
-copyright = '2018, Karoline Pauls'
+copyright = '2018-2019, Karoline Pauls, Infectious Media, contributors'
 author = 'Karoline Pauls'
 
 # The short X.Y version
