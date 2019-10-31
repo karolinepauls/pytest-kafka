@@ -75,5 +75,5 @@ publish-real-pypi:
     - web
   <<: *publish-template
   variables:
-    TWINE_REPOSITORY_URL: 'https://pypi.org/legacy/'
+    TWINE_REPOSITORY_URL: 'https://upload.pypi.org/legacy/'
     TWINE_PASSWORD: $REALPYPI_TWINE_PASSWORD
