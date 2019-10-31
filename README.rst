@@ -15,10 +15,11 @@ pytest-kafka |pypi| |pyversions| |ci| |docs|
 
 
 Pytest fixture factories for Zookeeper, Kafka server and Kafka consumer.
-`API docs <https://pytest-kafka.readthedocs.io>`__.
+`Read the API docs <https://pytest-kafka.readthedocs.io>`__.
 
 .. code:: python
 
+    from pathlib import Path
     from pytest_kafka import (
         make_zookeeper_process, make_kafka_server, make_kafka_consumer,
         terminate,
@@ -68,7 +69,7 @@ System requirements
 -------------------
 
 - Python 3.5+
-- JVM
+- a JVM
 - Kafka - https://kafka.apache.org/downloads
 
 
