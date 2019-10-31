@@ -1,6 +1,7 @@
 stages:
   - test
   - publish-test
+  - publish-real
 
 .test-template: &test-template
   stage: test
@@ -65,3 +66,14 @@ publish-test-pypi:
   variables:
     TWINE_REPOSITORY_URL: 'https://test.pypi.org/legacy/'
     TWINE_PASSWORD: $TESTPYPI_TWINE_PASSWORD
+
+publish-real-pypi:
+  stage: publish-real
+  when: manual
+  only:
+    - tags
+    - web
+  <<: *publish-template
+  variables:
+    TWINE_REPOSITORY_URL: 'https://pypi.org/legacy/'
+    TWINE_PASSWORD: $REALPYPI_TWINE_PASSWORD
