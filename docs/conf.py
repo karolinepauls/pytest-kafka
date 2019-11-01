@@ -42,7 +42,7 @@ release = VERSION
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx_autodoc_annotation',
+    'sphinx_autodoc_typehints',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
@@ -178,8 +178,8 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 
 def run_apidoc(_):
-    from sphinx.apidoc import main
-    main(["I'm a cow, really", '../pytest_kafka', '-o', 'source/', '-fMe'])
+    from sphinx.ext.apidoc import main
+    main(['../pytest_kafka', '-o', 'source/', '-fMe'])
 
 
 def setup(app):

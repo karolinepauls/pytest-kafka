@@ -97,9 +97,9 @@ DEV_REQUIREMENTS = [
     'mypy',
 ]
 DOC_REQUIREMENTS = [
-    'Sphinx==1.7.8',
+    'Sphinx==2.2.1',
     'sphinx-autodoc-annotation==1.0.post1',
-    'sphinx-rtd-theme==0.4.1',
+    'sphinx-rtd-theme==0.4.3',
 ]
 
 if __name__ == '__main__':
