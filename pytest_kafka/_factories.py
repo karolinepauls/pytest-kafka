@@ -129,6 +129,7 @@ def make_kafka_server(
     kafka_config_template: str = KAFKA_SERVER_CONFIG_TEMPLATE,
     teardown_fn: Callable[[Popen], Any] = terminate,
     scope: str = 'function',
+    timeout: int = 15
 ) -> Callable[..., Tuple[Popen, int]]:
     """
     Make a Kafka fixture.
@@ -144,6 +145,7 @@ def make_kafka_server(
         ``kafka_port``. See :py:const:`pytest_kafka.constants.KAFKA_SERVER_CONFIG_TEMPLATE`.
     :param teardown_fn: function to tear down Kafka (:py:func:`terminate` by default)
     :param scope: 'function' or 'session'
+    :param timeout: How long to wait for kafka to come online in seconds
     """
     @pytest.fixture(scope=scope)
     def kafka_server(request: 'SubRequest') -> Tuple[Popen, int]:
@@ -185,7 +187,7 @@ def make_kafka_server(
         prev_propagate = kafka_logger.propagate
         try:
             kafka_logger.propagate = False
-            _wait_until(kafka_started)
+            _wait_until(kafka_started, timeout=timeout)
         finally:
             kafka_logger.propagate = prev_propagate
 
