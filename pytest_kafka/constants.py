@@ -1,7 +1,7 @@
 """Config templates and constants."""
 
 
-KAFKA_SERVER_CONFIG_TEMPLATE = '''
+KAFKA_SERVER_CONFIG_TEMPLATE = '''\
 reserved.broker.max.id=65535
 broker.id={kafka_port}
 listeners=PLAINTEXT://:{kafka_port}
@@ -20,10 +20,11 @@ default.replication.factor=1
 '''
 """Kafka config template. ``kafka_log_dir``, ```kafka_port``, and ``zk_port`` keys are required."""
 
-ZOOKEEPER_CONFIG_TEMPLATE = '''
+ZOOKEEPER_CONFIG_TEMPLATE = '''\
 dataDir={zk_data_dir}
 clientPort={zk_port}
 maxClientCnxns=0
+admin.enableServer=false
 '''
 """Zookeeper config template. ``zk_data_dir`` and ``zk_port`` keys are required."""
 
