@@ -13,9 +13,9 @@ from setuptools import setup, Command  # type: ignore
 from setuptools.command.develop import develop  # type: ignore
 
 
-KAFKA_URL = 'https://www.mirrorservice.org/sites/ftp.apache.org/kafka/2.2.0/kafka_2.12-2.2.0.tgz'
+KAFKA_URL = 'https://downloads.apache.org/kafka/2.8.0/kafka_2.13-2.8.0.tgz'
 KAFKA_TAR = 'kafka.tgz'
-KAFKA_TAR_ROOTDIR = 'kafka_2.12-2.2.0'
+KAFKA_TAR_ROOTDIR = 'kafka_2.13-2.8.0/'
 KAFKA_DIR = 'kafka'
 
 
