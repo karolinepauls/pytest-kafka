@@ -91,7 +91,7 @@ def make_zookeeper_process(
     :param teardown_fn: function to tear down Zookeeper (:py:func:`terminate` by default)
     :param scope: 'function' or 'session'
     """
-    @pytest.fixture(scope=scope)
+    @pytest.fixture(scope=scope)  # type: ignore
     def zookeeper_process(request: 'SubRequest') -> Tuple[Popen, int]:
         """Configure and start a Zookeeper service."""
         used_zk_port = port_for.select_random() if zk_port is None else zk_port
@@ -147,7 +147,7 @@ def make_kafka_server(
     :param scope: 'function' or 'session'
     :param timeout: How long to wait for kafka to come online in seconds
     """
-    @pytest.fixture(scope=scope)
+    @pytest.fixture(scope=scope)  # type: ignore
     def kafka_server(request: 'SubRequest') -> Tuple[Popen, int]:
         """Configure and start a Kafka server."""
         _, zk_port = request.getfixturevalue(zookeeper_fixture_name)
@@ -220,7 +220,7 @@ def make_kafka_consumer(
     if kafka_topics is None:
         kafka_topics = []
 
-    @pytest.fixture(scope=scope)
+    @pytest.fixture(scope=scope)  # type: ignore
     def kafka_consumer(request: 'SubRequest') -> KafkaConsumer:
         """
         Get a connected Kafka consumer.

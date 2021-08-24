@@ -120,7 +120,7 @@ htmlhelp_basename = 'pytest-kafkadoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements = {
+latex_elements: dict = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -178,7 +178,7 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 
 def run_apidoc(_):
-    from sphinx.ext.apidoc import main
+    from sphinx.ext.apidoc import main  # type: ignore
     main(['../pytest_kafka', '-o', 'source/', '-fMe'])
 
 
