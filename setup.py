@@ -75,7 +75,7 @@ class DownloadKafka(Command):
         set_up_kafka()
 
 
-VERSION = '0.4.0'
+VERSION = '0.5.0'
 
 # Optional suffix for Test PyPI packages.
 VERSION_SUFFIX = environ.get('VERSION_SUFFIX', None)
