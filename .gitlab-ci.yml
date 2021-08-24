@@ -23,10 +23,6 @@ stages:
     - 'pip install dist/pytest-kafka-*.tar.gz'
     - py.test -vv -s --durations=0
 
-test-3.5:
-  image: python:3.5-slim-buster
-  <<: *test-template
-
 test-3.6:
   image: python:3.6-slim-buster
   <<: *test-template
@@ -39,6 +35,9 @@ test-3.8:
   image: python:3.8-slim-buster
   <<: *test-template
 
+test-3.9:
+  image: python:3.9-slim-buster
+  <<: *test-template
 
 .publish-template: &publish-template
   image: python:3.8-slim-buster

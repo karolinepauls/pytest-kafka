@@ -68,8 +68,8 @@ Session-scoped fixtures are also available. Consult the `test suite
 System requirements
 -------------------
 
-- Python 3.5+
-- a JVM
+- Python 3.6+
+- a JVM that can run Kafka and Zookeeper
 - Kafka - https://kafka.apache.org/downloads
 
 
