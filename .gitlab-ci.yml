@@ -16,7 +16,7 @@ stages:
     - '[ -d dist ]'
     - pip install .[dev]
     - flake8
-    - mypy .
+    - mypy . --exclude build
     # Install the packaged project and make sure we're not importing another.
     - pip uninstall pytest-kafka -y
     - rm pytest_kafka -r
