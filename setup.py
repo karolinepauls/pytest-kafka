@@ -13,9 +13,9 @@ from setuptools import setup, Command  # type: ignore
 from setuptools.command.develop import develop  # type: ignore
 
 
-KAFKA_URL = 'https://downloads.apache.org/kafka/3.2.0/kafka_2.13-3.2.0.tgz'
+KAFKA_URL = 'https://downloads.apache.org/kafka/3.2.3/kafka_2.13-3.2.3.tgz'
 KAFKA_TAR = 'kafka.tgz'
-KAFKA_TAR_ROOTDIR = 'kafka_2.13-3.2.0/'
+KAFKA_TAR_ROOTDIR = 'kafka_2.13-3.2.3/'
 KAFKA_DIR = 'kafka'
 
 
@@ -75,7 +75,7 @@ class DownloadKafka(Command):
         set_up_kafka()
 
 
-VERSION = '0.5.0'
+VERSION = '0.5.1'
 
 # Optional suffix for Test PyPI packages.
 VERSION_SUFFIX = environ.get('VERSION_SUFFIX', None)
