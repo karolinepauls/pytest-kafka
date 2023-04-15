@@ -5,7 +5,7 @@ from test_pytest_kafka import test_custom_kill
 
 
 EXPECTED_TEARDOWN_ON_KILL = 0.2
-test_custom_kill_duration = None  # type: Optional[float]
+test_custom_kill_duration: Optional[float] = None
 
 
 def _test_custom_kill_slow_teardown() -> bool:

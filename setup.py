@@ -60,7 +60,7 @@ class CustomDevelop(develop):
 class DownloadKafka(Command):
     """Command to download Kafka."""
 
-    user_options = []  # type: List[Tuple]
+    user_options: List[Tuple] = []
 
     def initialize_options(self):
         """Do nothing, method required by setuptools."""
