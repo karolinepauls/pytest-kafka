@@ -6,6 +6,7 @@ Can serve as examples of Pytest-kafka usage.
 from pathlib import Path
 from typing import Tuple, TYPE_CHECKING
 from functools import partial
+from os import environ
 from subprocess import Popen
 from time import sleep
 import pytest  # type: ignore
@@ -17,7 +18,9 @@ if TYPE_CHECKING:
 
 
 ROOT = Path(__file__).parent
-KAFKA_SCRIPTS = ROOT / 'kafka/bin/'
+
+# Optionally use an alternate location for Kafka when the `KAFKA_SCRIPTS` env var is set
+KAFKA_SCRIPTS = Path(environ.get('KAFKA_SCRIPTS', str(ROOT / 'kafka/bin/')))
 
 KAFKA_BIN = str(KAFKA_SCRIPTS / 'kafka-server-start.sh')
 ZOOKEEPER_BIN = str(KAFKA_SCRIPTS / 'zookeeper-server-start.sh')

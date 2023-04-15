@@ -2,45 +2,14 @@
 """Pytest Kafka fixtures."""
 import sys
 import subprocess
-import contextlib
-import shutil
-import urllib.request
-import tarfile
 from os import environ
 from pathlib import Path
 from typing import List, Tuple
 from setuptools import setup, Command  # type: ignore
 from setuptools.command.develop import develop  # type: ignore
 
-
-KAFKA_URL = 'https://downloads.apache.org/kafka/3.2.3/kafka_2.13-3.2.3.tgz'
-KAFKA_TAR = 'kafka.tgz'
-KAFKA_TAR_ROOTDIR = 'kafka_2.13-3.2.3/'
-KAFKA_DIR = 'kafka'
-
-
-def set_up_kafka():
-    """Clean, download Kafka from an official mirror and untar it."""
-    clean_kafka()
-
-    print('* Downloading Kafka', file=sys.stderr)
-    urllib.request.urlretrieve(KAFKA_URL, KAFKA_TAR)
-
-    print('* Unpacking Kafka', file=sys.stderr)
-    with tarfile.open(KAFKA_TAR, 'r') as f:
-        f.extractall()
-
-    print('* Renaming:', KAFKA_TAR_ROOTDIR, '→', KAFKA_DIR, file=sys.stderr)
-    Path(KAFKA_TAR_ROOTDIR).rename(KAFKA_DIR)
-    Path(KAFKA_TAR).unlink()
-
-
-def clean_kafka():
-    """Clean whatever `set_up_kafka` may create."""
-    shutil.rmtree(KAFKA_DIR, ignore_errors=True)
-    shutil.rmtree(KAFKA_TAR_ROOTDIR, ignore_errors=True)
-    with contextlib.suppress(FileNotFoundError):
-        Path(KAFKA_TAR).unlink()
+sys.path.append(str(Path(__file__).parent.joinpath('pytest_kafka')))
+from utils import set_up_kafka  # type: ignore # noqa: E402
 
 
 class CustomDevelop(develop):
