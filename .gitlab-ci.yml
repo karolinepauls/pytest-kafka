@@ -10,15 +10,15 @@ stages:
     # Work around a packaging problem with OpenJDK.
     - 'for i in $(seq 1 8); do mkdir -p "/usr/share/man/man$i"; done'
     - apt-get update -qq && apt-get install -y -qq openjdk-11-jre-headless
-    - ./setup.py kafka
     - '[ ! -d dist ]'
     - ./setup.py sdist
     - '[ -d dist ]'
     - pip install .[dev]
     - flake8
     - mypy . --exclude build
-    # Install the packaged project and make sure we're not importing another.
+    # Install the packaged project and make sure we're not importing code from the directory.
     - pip uninstall pytest-kafka -y
+    - python ./pytest_kafka/install.py
     - rm pytest_kafka -r
     - 'pip install dist/pytest-kafka-*.tar.gz'
     - py.test -vv -s --durations=0

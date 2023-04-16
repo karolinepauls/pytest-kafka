@@ -1,47 +1,8 @@
 #!/usr/bin/env python3
 """Pytest Kafka fixtures."""
-import sys
-import subprocess
 from os import environ
 from pathlib import Path
-from typing import List, Tuple
-from setuptools import setup, Command  # type: ignore
-from setuptools.command.develop import develop  # type: ignore
-
-sys.path.append(str(Path(__file__).parent.joinpath('pytest_kafka')))
-from utils import set_up_kafka  # type: ignore # noqa: E402
-
-
-class CustomDevelop(develop):
-    """Install normal and dev dependencies and download Kafka."""
-
-    def run(self):
-        """Set up the local dev environment fully."""
-        super().run()
-        print('* Installing dev dependencies', file=sys.stderr)
-        subprocess.check_call(['pip', 'install', '-U', 'pip'])
-        subprocess.check_call(['pip', 'install'] + DEV_REQUIREMENTS)
-
-        print('* Setting up Kafka', file=sys.stderr)
-        set_up_kafka()
-
-
-class DownloadKafka(Command):
-    """Command to download Kafka."""
-
-    user_options: List[Tuple] = []
-
-    def initialize_options(self):
-        """Do nothing, method required by setuptools."""
-        pass
-
-    def finalize_options(self):
-        """Do nothing, method required by setuptools."""
-        pass
-
-    def run(self):
-        """Download Kafka."""
-        set_up_kafka()
+from setuptools import setup  # type: ignore
 
 
 VERSION = '0.5.1'
@@ -106,13 +67,9 @@ if __name__ == '__main__':
             'dev': DEV_REQUIREMENTS,
             'doc': DOC_REQUIREMENTS,
         },
-        cmdclass={
-            'kafka': DownloadKafka,
-            'develop': CustomDevelop,
-        },
         # We don't export fixtures for the user (only fixture factories) but we do declare some
         # fixtures for internal use.
         entry_points={
-            'pytest11': ["pytest_kafka = pytest_kafka._fixtures"]
+            'pytest11': ["pytest_kafka = pytest_kafka._fixtures"],
         },
     )

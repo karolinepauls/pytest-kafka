@@ -55,3 +55,7 @@ def clean_kafka(kafka_dir: typing.Union[str, Path] = KAFKA_DIR,
     shutil.rmtree(kafka_tar_rootdir, ignore_errors=True)
     with contextlib.suppress(FileNotFoundError):
         Path(kafka_tar).unlink()
+
+
+if __name__ == '__main__':
+    set_up_kafka()

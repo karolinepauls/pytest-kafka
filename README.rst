@@ -76,12 +76,10 @@ System requirements
 Development
 -----------
 
-Execute ``./setup.py develop`` in a virtualenv. This will take care of:
+.. code:: sh
 
-- installing dependencies
-- updating pip
-- installing dev dependencies
-- installing Kafka to the project dir (for development only)
+   pip install -e .[dev]
+   python ./pytest_kafka/install.py  # will install kafka to ./kafka
 
 
 Acknowledgements
