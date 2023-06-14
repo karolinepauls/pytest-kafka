@@ -5,7 +5,7 @@ from pathlib import Path
 from setuptools import setup  # type: ignore
 
 
-VERSION = '0.5.1'
+VERSION = '0.6.0'
 
 # Optional suffix for Test PyPI packages.
 VERSION_SUFFIX = environ.get('VERSION_SUFFIX', None)
