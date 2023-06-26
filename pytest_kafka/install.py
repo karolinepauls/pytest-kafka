@@ -8,7 +8,7 @@ import urllib.request
 from pathlib import Path
 
 
-KAFKA_URL = 'https://downloads.apache.org/kafka/3.2.3/kafka_2.13-3.2.3.tgz'
+KAFKA_URL = 'https://archive.apache.org/dist/kafka/3.2.3/kafka_2.13-3.2.3.tgz'
 KAFKA_TAR = 'kafka.tgz'
 KAFKA_DIR = 'kafka'
 KAFKA_TAR_ROOTDIR = 'kafka_2.13-3.2.3/'
