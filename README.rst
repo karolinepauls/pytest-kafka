@@ -79,7 +79,7 @@ Development
 .. code:: sh
 
    pip install -e .[dev]
-   python ./pytest_kafka/install.py  # will install kafka to ./kafka
+   ./pytest_kafka/install.py  # will install kafka to ./kafka
 
 
 Acknowledgements
