@@ -27,9 +27,10 @@ DEV_REQUIREMENTS = [
     'mypy',
 ]
 DOC_REQUIREMENTS = [
-    'Sphinx==2.2.1',
-    'sphinx_autodoc_typehints==1.9.0',
-    'sphinx-rtd-theme==0.4.3',
+    'Sphinx==7.4.7',
+    'Jinja2==3.1.4',
+    'sphinx-autodoc-typehints==2.2.3',
+    'sphinx-rtd-theme==2.0.0',
 ]
 
 if __name__ == '__main__':
