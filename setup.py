@@ -17,7 +17,6 @@ README = README_FILE.read_text('utf-8')
 REQUIREMENTS = [
     'pytest',
     'port_for>=0.4',
-    'kafka-python>=1.4.3',
 ]
 DEV_REQUIREMENTS = [
     'flake8',
@@ -31,6 +30,12 @@ DOC_REQUIREMENTS = [
     'Jinja2==3.1.4',
     'sphinx-autodoc-typehints==2.2.3',
     'sphinx-rtd-theme==2.0.0',
+]
+KAFKA_PYTHON_REQUIREMENT = [
+    'kafka-python>=1.4.3',
+]
+KAFKA_PYTHON_NG_REQUIREMENT = [
+    'kafka-python-ng>=2.2.2',
 ]
 
 if __name__ == '__main__':
@@ -65,6 +70,8 @@ if __name__ == '__main__':
         zip_safe=False,
         install_requires=REQUIREMENTS,
         extras_require={
+            'kafka-python': KAFKA_PYTHON_REQUIREMENT,
+            'kafka-python-ng': KAFKA_PYTHON_NG_REQUIREMENT,
             'dev': DEV_REQUIREMENTS,
             'doc': DOC_REQUIREMENTS,
         },

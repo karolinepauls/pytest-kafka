@@ -6,8 +6,15 @@ from pathlib import Path
 from time import time, sleep
 from typing import List, Callable, Optional, Tuple, Any, TYPE_CHECKING
 from subprocess import Popen, TimeoutExpired
-from kafka import KafkaProducer, KafkaConsumer  # type: ignore
-from kafka.errors import NoBrokersAvailable  # type: ignore
+try:
+    from kafka import KafkaProducer, KafkaConsumer  # type: ignore
+    from kafka.errors import NoBrokersAvailable  # type: ignore
+except ImportError as e:
+    raise ImportError(
+        "Kafka depenency is no longer provided with the project. "
+        "Depend on pytest-kafka[kafka-python] or pytest-kafka[kafka-python-ng]."
+    ) from e
+
 import pytest  # type: ignore
 import port_for  # type: ignore
 from pytest_kafka.constants import (

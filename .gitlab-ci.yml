@@ -9,38 +9,58 @@ stages:
     - '[ -f pytest_kafka/py.typed ]'  # Typing marker must exist.
     # Work around a packaging problem with OpenJDK.
     - 'for i in $(seq 1 8); do mkdir -p "/usr/share/man/man$i"; done'
-    - apt-get update -qq && apt-get install -y -qq openjdk-11-jre-headless
+    - apt-get update -qq && apt-get install -y -qq default-jre-headless
     - '[ ! -d dist ]'
     - ./setup.py sdist
     - '[ -d dist ]'
-    - pip install .[dev]
+    - 'pip install ".[dev,$KAFKA_EXTRA]"'
     - flake8
     - mypy . --exclude build
     # Install the packaged project and make sure we're not importing code from the directory.
     - pip uninstall pytest-kafka -y
     - python ./pytest_kafka/install.py
     - rm pytest_kafka -r
-    - 'pip install dist/pytest-kafka-*.tar.gz'
+    - 'pip install dist/pytest*kafka-*.tar.gz'
     - py.test -vv -s --durations=0
 
-test-3.6:
+test-3.6-kafka-python:
   image: python:3.6-slim-buster
   <<: *test-template
+  variables:
+    KAFKA_EXTRA: kafka-python
 
-test-3.7:
-  image: python:3.7-slim-buster
-  <<: *test-template
+# Skipping 3.7 and 3.8 to be less resource-intensive on GitLab CI.
 
-test-3.8:
-  image: python:3.8-slim-buster
-  <<: *test-template
-
-test-3.9:
+test-3.9-kafka-python:
   image: python:3.9-slim-buster
   <<: *test-template
+  variables:
+    KAFKA_EXTRA: kafka-python
+
+# Skipping 3.10.
+
+# 3.11 is the last version where kafka-python works.
+test-3.11-kafka-python:
+  image: python:3.11-slim-bookworm
+  <<: *test-template
+  variables:
+    KAFKA_EXTRA: kafka-python
+
+test-3.11-kafka-python-ng:
+  image: python:3.11-slim-bookworm
+  <<: *test-template
+  variables:
+    KAFKA_EXTRA: kafka-python-ng
+
+test-3.12-kafka-python-ng:
+  image: python:3.12-slim-bookworm
+  <<: *test-template
+  variables:
+    KAFKA_EXTRA: kafka-python-ng
+
 
 .publish-template: &publish-template
-  image: python:3.8-slim-buster
+  image: python:3.12-slim-bookworm
   script:
     - '[[ -n "$TWINE_REPOSITORY_URL" ]]'
     # If not building a tag, suffix the version with an id:

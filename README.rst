@@ -1,6 +1,7 @@
 pytest-kafka |pypi| |pyversions| |ci| |docs|
 ============================================
 
+
 .. |pypi| image:: https://img.shields.io/pypi/v/pytest-kafka.svg
     :target: https://pypi.org/project/pytest-kafka/
 
@@ -16,6 +17,12 @@ pytest-kafka |pypi| |pyversions| |ci| |docs|
 
 Pytest fixture factories for Zookeeper, Kafka server and Kafka consumer.
 `Read the API docs <https://pytest-kafka.readthedocs.io>`__.
+
+.. warning::
+
+    ``kafka-python`` doesn't work with Python 3.12. To solve this problem, pytest-kafka, from 0.8.x, no
+    longer depends on ``kafka-python``. You can depend on extras: ``pytest-kafka[kafka-python]`` or
+    ``pytest-kafka[kafka-python-ng]`` for Python>3.12.
 
 .. code:: python
 
