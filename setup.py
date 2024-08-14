@@ -27,8 +27,6 @@ DEV_REQUIREMENTS = [
 ]
 DOC_REQUIREMENTS = [
     'Sphinx==7.4.7',
-    'Jinja2==3.1.4',
-    'sphinx-autodoc-typehints==2.2.3',
     'sphinx-rtd-theme==2.0.0',
 ]
 KAFKA_PYTHON_REQUIREMENT = [

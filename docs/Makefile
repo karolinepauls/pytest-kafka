@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    =
+SPHINXOPTS    = --fail-on-warning --keep-going
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = pytest-kafka
 SOURCEDIR     = .

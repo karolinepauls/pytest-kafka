@@ -1,10 +1,11 @@
 stages:
-  - test
+  - test-first
+  - test-rest
   - publish-test
   - publish-real
 
 .test-template: &test-template
-  stage: test
+  stage: test-rest
   script:
     - '[ -f pytest_kafka/py.typed ]'  # Typing marker must exist.
     # Work around a packaging problem with OpenJDK.
@@ -22,6 +23,21 @@ stages:
     - rm pytest_kafka -r
     - 'pip install dist/pytest*kafka-*.tar.gz'
     - py.test -vv -s --durations=0
+
+test-sphinx:
+  image: python:3.12-slim-bookworm
+  stage: test-first
+  script:
+    - 'pip install ".[doc,kafka-python-ng]"'
+    - cd docs
+    - python -m sphinx -T -b html -d _build/doctrees -D language=en . _build/html/ --fail-on-warning --keep-going
+
+test-3.12-kafka-python-ng:
+  image: python:3.12-slim-bookworm
+  <<: *test-template
+  stage: test-first
+  variables:
+    KAFKA_EXTRA: kafka-python-ng
 
 test-3.6-kafka-python:
   image: python:3.6-slim-buster
@@ -48,12 +64,6 @@ test-3.11-kafka-python:
 
 test-3.11-kafka-python-ng:
   image: python:3.11-slim-bookworm
-  <<: *test-template
-  variables:
-    KAFKA_EXTRA: kafka-python-ng
-
-test-3.12-kafka-python-ng:
-  image: python:3.12-slim-bookworm
   <<: *test-template
   variables:
     KAFKA_EXTRA: kafka-python-ng

@@ -8,3 +8,4 @@ kafka
 dist
 build
 docs/_build
+docs/source
